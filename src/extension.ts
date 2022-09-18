@@ -11,7 +11,9 @@ export function activate(context: vscode.ExtensionContext) {
 		let sels = textEditor.selections;
 		textEditor.edit(builder => {
 			for (let i = 0; i < sels.length; i++) {
-				let content = textEditor.document.getText(new vscode.Range(sels[i].start, sels[i].end));
+				let content: string = textEditor.document.getText(new vscode.Range(sels[i].start, sels[i].end));
+				if (content.startsWith('0x'))
+					content = content.replace('0x', '');
 				content = content.split('\n').map(item => Buffer.from(item, 'hex').toString('base64')).join('\n');
 				builder.replace(sels[i], content);
 			}
@@ -24,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 		textEditor.edit(builder => {
 			for (let i = 0; i < sels.length; i++) {
 				let content = textEditor.document.getText(new vscode.Range(sels[i].start, sels[i].end));
-				content = content.split('\n').map(item => Buffer.from(item, 'base64').toString('hex').toUpperCase()).join('\n');
+				content = '0x' + content.split('\n').map(item => Buffer.from(item, 'base64').toString('hex').toUpperCase()).join('\n');
 				builder.replace(sels[i], content);
 			}
 		});
